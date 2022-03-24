@@ -1,32 +1,84 @@
 AWSTemplateFormatVersion: "2010-09-09"
 Transform: "AWS::Serverless-2016-10-31"
 Description: CD Demo Lambda
+Parameters:
+  S3BucketName:
+    Type: String
+    Default: upload-photos-bucket
 Resources:
-  CDDemoLambda1:
+  S3Bucket:
+    Type: AWS::S3::Bucket
+    DependsOn: InvokePermission
+    Properties:
+      BucketName: !Ref S3BucketName
+      NotificationConfiguration:
+        LambdaConfigurations:
+          - Event: s3:ObjectCreated:Put
+            Function: !GetAtt [ PhotoLambda1, Arn]
+  InvokePermission:
+    Type: AWS::Lambda::Permission
+    DependsOn: PhotoLambda1
+    Properties:
+      FunctionName:
+        Fn::GetAtt:
+          - PhotoLambda1
+          - Arn
+      Action: lambda:InvokeFunction
+      Principal: s3.amazonaws.com
+      SourceArn:
+        Fn::Sub: arn:aws:s3:::${S3BucketName}
+  MyLayer:
+    Type: AWS::Lambda::LayerVersion
+    Properties:
+      CompatibleRuntimes:
+        - python3.7
+      Content:
+        S3Bucket: upload-photos-bucket
+        S3Key: requests.zip
+      Description: My layer
+      LayerName: my-layer
+      LicenseInfo: MIT
+  MyLayer2:
+    Type: AWS::Lambda::LayerVersion
+    Properties:
+      CompatibleRuntimes:
+        - python3.7
+      Content:
+        S3Bucket: upload-photos-bucket
+        S3Key: python.zip
+      Description: My layer2
+      LayerName: my-layer2
+      LicenseInfo: MIT
+  PhotoLambda2:
     Type: "AWS::Serverless::Function"
     Properties:
-      FunctionName: search-photos-2
-      Handler: lambda_function.lambda_handler
+      FunctionName: search-photos
+      Handler: lambda.lambda_handler
       Runtime: python3.7
       CodeUri: ./search-photos-copy
-      Description: "Lambda function for CD Demo"
+      Description: "Lambda function"
       MemorySize: 128
-      Timeout: 30
-      Role: "arn:aws:iam::625543281468:role/admin-lambda-role"
+      Timeout: 60
+      Layers:
+        - !Ref MyLayer
+        - !Ref MyLayer2
+      Role: "arn:aws:iam::761713908019:role/service-role/search-photos-role"
       Environment:
         Variables:
           REGION: us-east-1
-  CDDemoLambda2:
+  PhotoLambda1:
     Type: "AWS::Serverless::Function"
     Properties:
-      FunctionName: index-photos-2
-      Handler: lambda_function.lambda_handler
-      Runtime: python3.6
+      FunctionName: index-photos
+      Handler: lambda.lambda_handler
+      Runtime: python3.7
       CodeUri: ./index-photos-copy
-      Description: "Lambda function for CD Demo"
+      Description: "Lambda function"
       MemorySize: 128
-      Timeout: 30
-      Role: "arn:aws:iam::625543281468:role/admin-lambda-role"
+      Timeout: 60
+      Layers:
+        - !Ref MyLayer
+      Role: "arn:aws:iam::761713908019:role/service-role/index-photos-role-o3x3jya5"
       Environment:
         Variables:
           REGION: us-east-1
