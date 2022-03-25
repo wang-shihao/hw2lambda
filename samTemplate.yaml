@@ -7,29 +7,21 @@ Resources:
     Properties:
       Handler: indexphotos.lambda_handler
       Runtime: python3.7
-      CodeUri: ./index-photos-copy
+      CodeUri: ./index-photos
       Description: ""
       MemorySize: 128
       Timeout: 30
       Role: "arn:aws:iam::761713908019:role/service-role/index-photos-role-o3x3jya5"
-      Layers:
-        - !Ref MyLayer
+      Layers: [arn:aws:lambda:us-east-1:761713908019:layer:my-layer:1]
   searchphotos:
     Type: "AWS::Serverless::Function"
     Properties:
       FunctionName: search-photos
       Handler: searchphotos.lambda_handler
       Runtime: python3.7
-      CodeUri: ./search-photos-copy
+      CodeUri: ./search-photos
       Description: ""
       MemorySize: 128
       Timeout: 30
       Role: "arn:aws:iam::761713908019:role/service-role/search-photos-role"
-      Layers:
-        - !Ref MyLayer
-        - !Ref MyLayer2
-        - 'arn:aws:lambda:us-east-1:406652052116:layer:requests_layer:2'
-  MyLayer:
-    - 'arn:aws:lambda:us-east-1:761713908019:layer:my-layer:1'
-  MyLayer2:
-    - 'arn:aws:lambda:us-east-1:761713908019:layer:my-layer2:1'
+      Layers: [arn:aws:lambda:us-east-1:761713908019:layer:my-layer:1,arn:aws:lambda:us-east-1:761713908019:layer:my-layer2:1]
