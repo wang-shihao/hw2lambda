@@ -35,12 +35,9 @@ Resources:
       MemorySize: 128
       Timeout: 30
       Role: "arn:aws:iam::761713908019:role/service-role/search-photos-role"
-      Events:
-        Api1:
-          Type: Api
-          Properties:
-            Path: /search
-            Method: GET
+      Environment:
+        Variables:
+          REGION: us-east-1
       Layers:
         - !Ref MyLayer
         - !Ref MyLayer2
