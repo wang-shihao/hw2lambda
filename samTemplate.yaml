@@ -12,18 +12,8 @@ Resources:
       MemorySize: 128
       Timeout: 30
       Role: "arn:aws:iam::761713908019:role/service-role/index-photos-role-o3x3jya5"
-      Events:
-        BucketEvent1:
-          Type: S3
-          Properties:
-            Bucket:
-              Ref: upload-photos-bucket
-            Events:
-              - 's3:ObjectCreated:Put'
       Layers:
         - !Ref MyLayer
-  bucket1:
-    Type: 'AWS::S3::Bucket'
   searchphotos:
     Type: "AWS::Serverless::Function"
     Properties:
@@ -35,9 +25,6 @@ Resources:
       MemorySize: 128
       Timeout: 30
       Role: "arn:aws:iam::761713908019:role/service-role/search-photos-role"
-      Environment:
-        Variables:
-          REGION: us-east-1
       Layers:
         - !Ref MyLayer
         - !Ref MyLayer2
