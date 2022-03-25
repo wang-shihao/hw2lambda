@@ -7,7 +7,7 @@ Resources:
     Properties:
       Handler: indexphotos.lambda_handler
       Runtime: python3.7
-      CodeUri: ./index-photos
+      CodeUri: ./index-photos-copy
       Description: ""
       MemorySize: 128
       Timeout: 30
@@ -19,7 +19,7 @@ Resources:
       FunctionName: search-photos
       Handler: searchphotos.lambda_handler
       Runtime: python3.7
-      CodeUri: ./search-photos
+      CodeUri: ./search-photos-copy
       Description: ""
       MemorySize: 128
       Timeout: 30
