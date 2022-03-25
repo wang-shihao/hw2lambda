@@ -16,8 +16,8 @@ def lambda_handler(event, context):
 
     print(query_text)
 
-    base_url = 'https://search-photo-dcoxllgzvsuh2jzv6cj5soxojq.us-east-1.es.amazonaws.com/'
-    auth = ('coms6998', 'Coms6998!')
+    base_url = 'https://vpc-photos-rkisa6no36iownm37kejqzbziy.us-east-1.es.amazonaws.com'
+    auth = ('coms6998','Coms6998!')
     headers = {'Content-Type': 'application/json'}
 
     paths_set = set()
@@ -26,14 +26,14 @@ def lambda_handler(event, context):
         response = requests.get(url, auth=auth, headers=headers)
         response = response.json()
 
+
         for info in response['hits']['hits']:
             photo_data = info['_source']
             photo_bucket = photo_data['bucket']
             photo_key = photo_data['objectKey']
-
+            
             # check url format
-            photo_url = 'https://{}.s3.amazonaws.com/{}'.format(
-                photo_bucket, photo_key)
+            photo_url = 'https://{}.s3.amazonaws.com/{}'.format(photo_bucket, photo_key)
             paths_set.add(photo_url)
 
     photo_paths = list(paths_set)
@@ -41,12 +41,11 @@ def lambda_handler(event, context):
 
     lam_response = {
         "statusCode": 200,
-        "headers": {"Access-Control-Allow-Origin": "*", "Content-Type": "application/json"},
+        "headers": {"Access-Control-Allow-Origin":"*","Content-Type":"application/json"},
         "body": json.dumps(photo_paths),
         "isBase64Encoded": False
     }
     return lam_response
-
 
 def getPhotoLabel(query_text):
     client = boto3.client('lex-runtime')
@@ -58,8 +57,8 @@ def getPhotoLabel(query_text):
     labels = []
     if 'slots' in lex_response:
         slots = lex_response['slots']
-        for key, value in slots.items():
-            if value != None:
+        for key,value in slots.items():
+            if value!=None:
                 p = inflect.engine()
                 if p.singular_noun(value):
                     singular_word = p.singular_noun(value)
@@ -68,4 +67,4 @@ def getPhotoLabel(query_text):
 
                 # singular_value =  value.rstrip('s')
                 labels.append(singular_word)
-        return labels
+    return labels
